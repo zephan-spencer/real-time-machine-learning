@@ -14,9 +14,11 @@ import argparse
 import os
 
 from torch.utils.tensorboard import SummaryWriter
-writer = SummaryWriter('runs/testing')
+
+
+
 parser = argparse.ArgumentParser(description='')
-parser.add_argument('--epochs', default=200, type=int, metavar='N',
+parser.add_argument('--epochs', default=300, type=int, metavar='N',
                     help='number of total epochs to run')
 parser.add_argument('-j', '--workers', default=4, type=int, metavar='N',
                     help='number of data loading workers (default: 4)')
@@ -30,10 +32,16 @@ parser.add_argument('--weight-decay', '--wd', default=1e-4, type=float,
                     metavar='W', help='weight decay (default: 1e-4)')
 parser.add_argument('--lrDecayPoints', nargs='+', type=int, default=-1,
                     help='List of network class sizes', required=True)
-                   
+parser.add_argument('--modelName', type=str, default="prob2A",
+                    help='Name of the desired model', required=True)
+
+
+global args, best_prec1
+args = parser.parse_args()
+
+writer = SummaryWriter('runs/' + args.modelName)
+
 def main():
-    global args, best_prec1
-    args = parser.parse_args()
 
     cudnn.benchmark = True
     # Define the mean and std. devation for the dataset
@@ -58,7 +66,11 @@ def main():
         num_workers=args.workers, pin_memory=True)
 
     # Create the model and send it to the GPU
-    model = Prob2AModel()
+    if args.modelName == "prob2A":
+        model = Prob2AModel()
+    elif args.modelName == "prob2B":
+        model = Prob2BModel()
+
     model.cuda()
 
     criterion = nn.CrossEntropyLoss().cuda()
@@ -69,18 +81,21 @@ def main():
 
     lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer,
                                                         milestones=args.lrDecayPoints)
+    print("Initial validation accuracy:")
+    prec1 = validate(valLoader, model, criterion, 1)
+    
+    for epoch in range(1, args.epochs+1, 1):
 
-    for epoch in range(0, args.epochs, 1):
+        if epoch % 10 == 0:
+            # Evaluate the network
+            prec1 = validate(valLoader, model, criterion, epoch)
+
         # train for one epoch
         print('current lr {:.5e}'.format(optimizer.param_groups[0]['lr']))
         
         train(trainLoader, model, criterion, optimizer, epoch)
 
         lr_scheduler.step()
-        
-        if epoch % 20 == 0:
-            # evaluate on validation set
-            prec1 = validate(valLoader, model, criterion, epoch)
 
 def train(trainLoader, model, criterion, optimizer, epoch):
     # Swap model to train
@@ -124,8 +139,8 @@ def train(trainLoader, model, criterion, optimizer, epoch):
         trainLoss = sum(epochLoss)/len(epochLoss)
         trainAccuracy = sum(epochAccuracy)/len(epochAccuracy)            
             
-        writer.add_scalar('CIFAR-10 Validation loss', trainLoss, epoch)
-        writer.add_scalar('CIFAR-10 Validation Accuracy', trainAccuracy, epoch)
+        writer.add_scalar('CIFAR-10 Training loss', trainLoss, epoch)
+        writer.add_scalar('CIFAR-10 Training Accuracy', trainAccuracy, epoch)
 
 def validate(valLoader, model, criterion, epoch):
     # Swap to evaluation
@@ -159,7 +174,7 @@ def validate(valLoader, model, criterion, epoch):
         writer.add_scalar('CIFAR-10 Validation loss', valLoss, epoch)
         writer.add_scalar('CIFAR-10 Validation Accuracy', valAccuracy, epoch)
             
-        print(' Validation Accuracy: {top1.avg:.3f}'.format(top1=top1))
+        print('Validation Accuracy: {top1.avg:.3f}'.format(top1=top1))
 
     return top1.avg
 
@@ -173,7 +188,24 @@ class Prob2AModel(nn.Module):
         x = torch.flatten(x, 1) # flatten all dimensions except batch
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
-        # x = self.fc3(x)
+
+        return x
+
+class Prob2BModel(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.fc1 = nn.Linear(3072, 1024)
+        self.fc2 = nn.Linear(1024, 512)
+        self.fc3 = nn.Linear(512, 128)
+        self.fc4 = nn.Linear(128, 10)
+
+    def forward(self, x):
+        x = torch.flatten(x, 1) # flatten all dimensions except batch
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        x = F.relu(self.fc3(x))
+        x = F.relu(self.fc4(x))
+
         return x
 
 class AverageMeter(object):
