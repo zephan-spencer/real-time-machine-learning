@@ -24,7 +24,7 @@ parser.add_argument('-j', '--workers', default=4, type=int, metavar='N',
                     help='number of data loading workers (default: 4)')
 parser.add_argument('-b', '--batch-size', default=128, type=int,
                     metavar='N', help='mini-batch size (default: 128)')
-parser.add_argument('--lr', '--learning-rate', default=0.00001, type=float,
+parser.add_argument('--lr', '--learning-rate', default=0.01, type=float,
                     metavar='LR', help='initial learning rate')
 parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
                     help='momentum')
@@ -106,7 +106,7 @@ def main():
         
         train(trainLoader, model, criterion, optimizer, epoch)
 
-        lr_scheduler.step()
+        # lr_scheduler.step()
 
 def train(trainLoader, model, criterion, optimizer, epoch):
     # Swap model to train
