@@ -95,14 +95,11 @@ def main():
 
     lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer,
                                                         milestones=[100,150])
-    print("Initial validation accuracy:")
-    prec1 = validate(valLoader, model, criterion, 1)
     
     for epoch in range(1, args.epochs+1, 1):
 
-        if epoch % 10 == 0:
-            # Evaluate the network
-            prec1 = validate(valLoader, model, criterion, epoch)
+        # Evaluate the network
+        prec1 = validate(valLoader, model, criterion, epoch)
 
         # train for one epoch
         print('current lr {:.5e}'.format(optimizer.param_groups[0]['lr']))
@@ -211,7 +208,7 @@ class BModel(nn.Module):
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         x = F.relu(self.fc3(x))
-        x = F.relu(self.fc4(x))
+        x = self.fc4(x)
 
         return x
 
