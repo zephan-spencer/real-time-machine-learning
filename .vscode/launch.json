@@ -1,0 +1,32 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "HW3 Prob 1A",
+            "type": "python",
+            "request": "launch",
+            "program": "homework3.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["--modelName","prob1A","--lrDecayPoints","100","200", "--epochs", "300"]
+        },
+        {
+            "name": "HW3 Prob 1B",
+            "type": "python",
+            "request": "launch",
+            "program": "homework3.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["--modelName","prob1B","--lrDecayPoints","100","200", "--epochs", "300"]
+        },
+        {
+            "name": "HW3 Prob 2A",
+            "type": "python",
+            "request": "launch",
+            "program": "homework3.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["--modelName","prob2A","--lrDecayPoints","100","200", "--epochs", "300", "--weight-decay", "0"]
+        }
+    ]
+}
