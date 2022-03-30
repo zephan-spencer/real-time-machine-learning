@@ -71,6 +71,12 @@ def main():
         model = Prob1B()
     elif args.modelName == "prob2A":
         model = resnet.resnet10NoNorm()
+    elif args.modelName == "prob2BBatchNorm":
+        model = resnet.resnet10()
+    elif args.modelName == "prob2BDropout":
+        model = resnet.resnet10NoNorm(dropoutEnable=True)
+    elif args.modelName == "prob2BWeightDecay":
+        model = resnet.resnet10NoNorm(dropoutEnable=False)
     
     macs, params = get_model_complexity_info(model, (3, 32, 32), as_strings=True,
                                            print_per_layer_stat=False, verbose=False)
