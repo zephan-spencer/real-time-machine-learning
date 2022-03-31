@@ -27,6 +27,33 @@
             "console": "integratedTerminal",
             "justMyCode": true,
             "args": ["--modelName","prob2A","--lrDecayPoints","100","200", "--epochs", "300", "--weight-decay", "0"]
+        },
+        {
+            "name": "HW3 Prob 2B BN",
+            "type": "python",
+            "request": "launch",
+            "program": "homework3.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["--modelName","prob2BBatchNorm","--lrDecayPoints","100","200", "--epochs", "300", "--weight-decay", "0"]
+        },
+        {
+            "name": "HW3 Prob 2B Dropout",
+            "type": "python",
+            "request": "launch",
+            "program": "homework3.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["--modelName","prob2BDropout","--lrDecayPoints","100","200", "--epochs", "300", "--weight-decay", "0"]
+        },
+        {
+            "name": "HW3 Prob 2B Weight Decay",
+            "type": "python",
+            "request": "launch",
+            "program": "homework3.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["--modelName","prob2BWeightDecay","--lrDecayPoints","100","200", "--epochs", "300", "--weight-decay", "0.001"]
         }
     ]
 }
