@@ -15,7 +15,7 @@ import os
 
 from torch.utils.tensorboard import SummaryWriter
 
-
+from ptflops import get_model_complexity_info
 
 parser = argparse.ArgumentParser(description='')
 parser.add_argument('--epochs', default=300, type=int, metavar='N',
@@ -70,7 +70,12 @@ def main():
         model = Prob2AModel()
     elif args.modelName == "prob2B":
         model = Prob2BModel()
-
+    
+    macs, params = get_model_complexity_info(model, (3, 32, 32), as_strings=True,
+                                           print_per_layer_stat=False, verbose=False)
+    print('{:<30}  {:<8}'.format('Computational complexity: ', macs))
+    print('{:<30}  {:<8}'.format('Number of parameters: ', params))
+    
     model.cuda()
 
     criterion = nn.CrossEntropyLoss().cuda()
